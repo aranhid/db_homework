@@ -13,10 +13,12 @@ CREATE TRIGGER `trigger_change_price`
 AFTER UPDATE ON `products` 
 FOR EACH ROW 
 BEGIN
-    INSERT INTO `price_log`
-        (`product_id`, `edit_date`, `old_price`, `new_price`)
-    VALUES
-        (OLD.`id`, NOW(), OLD.`price`, NEW.`price`);
+    IF (OLD.`price` != NEW.`price`) THEN
+        INSERT INTO `price_log`
+            (`product_id`, `edit_date`, `old_price`, `new_price`)
+        VALUES
+            (OLD.`id`, NOW(), OLD.`price`, NEW.`price`);
+    END IF;
 END//
 DELIMITER ;
 -- Создайте триггер на удаление группы товаров таким образом, чтобы при ее удалении все товары из этой группы оказывались не привязанными ни к одной группе, а их наличие на складе менялось в положение нет в наличии.
